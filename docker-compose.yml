@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+  mysql:
+    image: mysql:5
+    restart: always
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/mysql/:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "CAXs3izCpYpKUPHw"
+      MYSQL_DATABASE: "db_app"
+      MYSQL_USER: "admin_db_app"
+      MYSQL_PASSWORD: "CKU4vsaz3fuKxiUR"
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+
+  build_app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - type: volume
+        source: app
+        target: /home/target
+
+  webapp:
+    image: tomcat:8.0-alpine
+    ports:
+      - "80:8080"
+    volumes:
+      - type: volume
+        source: app
+        target: /usr/local/tomcat/webapps
+    depends_on:
+      - build_app
+
+volumes:
+  app:
